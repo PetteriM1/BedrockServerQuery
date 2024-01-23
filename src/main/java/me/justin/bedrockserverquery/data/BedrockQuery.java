@@ -36,13 +36,14 @@ public record BedrockQuery(boolean online, String motd, int protocolVersion, Str
             socket.setSoTimeout(2000);
             socket.receive(responsePacket);
 
-            String[] splittedData = new String(responsePacket.getData(), 0, responsePacket.getLength()).split(";", 2)[1].split(";");
+            // MCPE;<motd>;<protocol>;<version>;<players>;<max players>;<id>;<sub motd>;<gamemode>;<not limited>;<port>;<port>
+            String[] splittedData = new String(responsePacket.getData(), 35, responsePacket.getLength()).split(";");
 
-            int protocol = Integer.parseInt(splittedData[1]);
-            int playerCount = Integer.parseInt(splittedData[3]);
-            int maxPlayers = Integer.parseInt(splittedData[4]);
+            int protocol = Integer.parseInt(splittedData[2]);
+            int playerCount = Integer.parseInt(splittedData[4]);
+            int maxPlayers = Integer.parseInt(splittedData[5]);
 
-            return new BedrockQuery(true, splittedData[0], protocol, splittedData[2], playerCount, maxPlayers, splittedData[6], splittedData[7]);
+            return new BedrockQuery(true, splittedData[1], protocol, splittedData[3], playerCount, maxPlayers, splittedData[7], splittedData[8]);
         } catch (Exception e) {
             return new BedrockQuery(false, "", -1, "", 0, 0, "", "");
         }
